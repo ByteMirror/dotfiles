@@ -1,6 +1,8 @@
 # Packages to install via Homebrew on macOS
 macos_brew_packages:
   - espanso
+  - helix
+
   # - another-package
   # - cask-package: # For casks, use a dictionary
   #     name: google-chrome
@@ -19,19 +21,3 @@ linux_dnf_packages: []
 # Packages to install via Flatpak on Linux
 linux_flatpak_packages: []
   # - org.mozilla.firefox
-
-# Packages to install via Chocolatey on Windows
-windows_choco_packages: []
-  # - 7zip
-  # - git
-
-# Packages to install via Winget
-windows_winget_packages:
-  - Espanso.espanso
-  # - Microsoft.PowerToys
-  # - VideoLAN.VLC
-
-# Packages to install via Scoop
-windows_scoop_packages: []
-  # - curl
-  # - sudo 

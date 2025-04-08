@@ -22,7 +22,7 @@
         state: present
         update_cache: yes
       loop: "{{ linux_apt_packages }}"
-      when: 
+      when:
         - ansible_facts['os_family'] == "Debian"
         - linux_apt_packages is defined
         - linux_apt_packages | length > 0
@@ -33,7 +33,7 @@
         name: "{{ item }}"
         state: present
       loop: "{{ linux_dnf_packages }}"
-      when: 
+      when:
         - ansible_facts['os_family'] == "RedHat" # Covers Fedora, RHEL, CentOS etc.
         - linux_dnf_packages is defined
         - linux_dnf_packages | length > 0
@@ -44,7 +44,7 @@
         name: "{{ item }}"
         state: present
       loop: "{{ linux_flatpak_packages }}"
-      when: 
+      when:
         - ansible_facts['os_family'] != "Darwin" # General Linux check
         - linux_flatpak_packages is defined
         - linux_flatpak_packages | length > 0
@@ -85,38 +85,4 @@
             scope: user # Run as user service if possible
           when: ansible_facts['service_mgr'] == 'systemd'
 
-      when: ansible_facts['os_family'] != "Darwin" # Only run on Linux
-
-    # --- Windows Tasks --- #
-    # Note: Requires community.windows collection and likely pywinrm setup on target
-    # The run_once script doesn't handle Windows setup yet.
-    - name: Install Windows packages with Chocolatey
-      community.windows.win_chocolatey:
-        name: "{{ item }}"
-        state: present
-      loop: "{{ windows_choco_packages }}"
-      when:
-        - ansible_facts['os_family'] == "Windows"
-        - windows_choco_packages is defined
-        - windows_choco_packages | length > 0
-
-    - name: Install Windows packages with Winget
-      community.windows.win_winget:
-        name: "{{ item }}"
-        state: present
-      loop: "{{ windows_winget_packages }}"
-      when:
-        - ansible_facts['os_family'] == "Windows"
-        - windows_winget_packages is defined
-        - windows_winget_packages | length > 0
-
-    - name: Install Windows packages with Scoop
-      # Note: Scoop installs to the user scope by default.
-      community.windows.win_scoop:
-        name: "{{ item }}"
-        state: present
-      loop: "{{ windows_scoop_packages }}"
-      when:
-        - ansible_facts['os_family'] == "Windows"
-        - windows_scoop_packages is defined
-        - windows_scoop_packages | length > 0 
+      when: ansible_facts['os_family'] != "Darwin" # Only run on Linux 

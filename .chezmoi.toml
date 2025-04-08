@@ -2,5 +2,11 @@
 
 # Explicitly define interpreter for .sh files and restrict to non-Windows OS
 [interpreters.".sh"]
-  command = "sh"  # Or potentially /bin/sh if needed for specific Unix shells
-  condition = '''{{ not .chezmoi.os == "windows" }}''' 
+  command = "sh"
+  condition = '''{{ not .chezmoi.os == "windows" }}'''
+
+# Explicitly define interpreter for .ps1 files and restrict ONLY to Windows OS
+[interpreters.".ps1"]
+  command = "powershell.exe" # Or pwsh for PowerShell Core if preferred/installed
+  args = ["-NoProfile", "-NoLogo", "-ExecutionPolicy", "Bypass", "-File"]
+  condition = '''{{ eq .chezmoi.os "windows" }}''' 
