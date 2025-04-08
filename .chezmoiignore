@@ -1,0 +1,6 @@
+# .chezmoiignore
+
+# Ignore the Unix setup script when running on Windows
+{{ if eq .chezmoi.os "windows" -}}
+run_once_before_setup_unix.sh
+{{ end -}} 
