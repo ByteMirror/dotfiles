@@ -1,0 +1,6 @@
+# .chezmoi.toml
+
+# Explicitly define interpreter for .sh files and restrict to non-Windows OS
+[interpreters.".sh"]
+  command = "sh"  # Or potentially /bin/sh if needed for specific Unix shells
+  condition = '''{{ not .chezmoi.os == "windows" }}''' 
