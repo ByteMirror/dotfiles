@@ -1,0 +1,118 @@
+# espanso match file
+
+# For a complete introduction, visit the official docs at: https://espanso.org/docs/
+
+# You can use this file to define the base matches (aka snippets)
+# that will be available in every application when using espanso.
+
+# Matches are substitution rules: when you type the "trigger" string
+# it gets replaced by the "replace" string.
+matches:
+  # Simple text replacement
+  - trigger: ":espanso"
+    replace: "Hi there!"
+
+  # NOTE: espanso uses YAML to define matches, so pay attention to the indentation!
+
+  # But matches can also be dynamic:
+
+  # Print the current date
+  - trigger: ":date"
+    replace: "{{mydate}}"
+    vars:
+      - name: mydate
+        type: date
+        params:
+          format: "%Y-%m-%d"
+
+  # Print the output of a shell command
+  - trigger: ":shell"
+    replace: "{{output}}"
+    vars:
+      - name: output
+        type: shell
+        params:
+          cmd: "echo 'Hello from your shell'"
+
+  # And much more! For more information, visit the docs: https://espanso.org/docs/
+
+
+  # Simple text replacement
+  - trigger: ";quote"
+    replace: "„"
+
+  # Simple text replacement
+  - trigger: ";nar"
+    replace: "> [!Tip] Vorlesen"
+
+  # Simple text replacement
+  - trigger: ";pro"
+    replace: "> [!Attention] Prompt "
+
+  # For Obsidian encounter block
+  - trigger: ";enc"
+    replace: |
+      ```encounter
+      name: 
+      creatures: 
+      - 
+      ```
+
+  # Dextrous Card display css property
+  - trigger: ";dex"
+    replace: "{display: true}"
+
+  # TCG Card Artwork Generator Prompt Snippet
+  - trigger: ";tcgart"
+    replace: "For this character, spell or creature, generate a retro fantasy artwork with a watercolor aesthetic, evoking the style of classic trading card games. The piece features intricate textures, soft brushstrokes, and vibrant yet balanced color schemes. The composition combines an ethereal, dreamlike quality with grounded, fantastical elements. The overall style reflects traditional aquarelle techniques, emphasizing subtle light effects, atmospheric depth, and hand-painted charm. The artwork is framed and composed as though it were designed for a magical or fantasy trading card, ensuring a rich and evocative visual presentation. Make sure to not include any Text or UI or anything else that does not belong to the artwork. I only want the artwork itself. The theme of the cards should be similar to the Witcher, World of Warcraft, Magic the Gathering or Dungeons and Dragons. If I ask for a character or creature please depict them in a dynamic situation or pose that is relevant to the character or creature. If I ask for a spell please depict no caster but only the look of the spell itself. Most importantly, the artwork should be a single image and not look artificial or digital in any way it should look like a watercolor artwork with brushstrokes and textures. Please depict people and creatures in a realistic way and not with a ton of fantastical elements like spell effects or glowing object or eyes unless otherwise specified. The artwork should be borderless and not have any background or frame. Under no circumstances should the subject of the artwork not have a background it should always be shown in an environment that befits it's theme."
+
+
+  # TCG Card Name Ideas for given Theme
+  - trigger: ";tcgnames"
+    replace: "For this subject or theme generate evocative and thematic card names suitable for a fantasy trading card game. The names should be concise, imaginative, and convey a sense of mystery, power, or intrigue. Use language that evokes magical, mythical, or fantastical elements (if necessary for the given subject), drawing inspiration from spells, creatures, artifacts, and events. Examples of styles include 'Blightborn Zealot,' 'Arcane Nexus,' 'Ethereal Sundering,' 'Cradle of Shadows,' or 'Phoenix of Emberwake.' Aim for a mix of single-word names like 'Omen,' 'Incantation,' or 'Oblivion,' and more elaborate titles like 'Tidebinder's Command' or 'Ruin of the Forgotten Realm.' Focus on creativity and fantasy themes."
+
+
+  # Generate TCG Creature Description for given Name
+  - trigger: ";tcgdesc"
+    replace: "Write a compelling and evocative description for a creature to be featured in a fantasy trading card game. The description should capture the creature's visual appearance, unique traits, and role in its environment. Include the following elements: Physical Appearance: Describe the creature's size, shape, and notable features (e.g., wings, fur, armor, glowing eyes). Use vivid and specific imagery to bring it to life. Abilities and Powers: Highlight any unique abilities or powers the creature possesses, especially those that define its role in its environment (e.g., fire breath, shadow stealth, nature magic). Personality and Behavior: Offer a glimpse into its temperament and behavior—whether it is aggressive, cunning, or protective. Lore and Context: Provide a short backstory or rol in its world, such as its habitat, allies, enemies, or a notable event in its history.\nTone and Style: Write in a way that matches the tone of fantasy trading card games like Magic: The Gathering or Hearthstone, balancing grandeur with clarity."
+
+
+# Create Mana Token in Description Box on Dextrous
+  - trigger: ";mana"
+    replace: "{Card Components/Resource Tokens/ManaToken.webp}"
+
+
+# Create Rune Token in Description Box on Dextrous
+  - trigger: ";rune"
+    replace: "{Card Components/Resource Tokens/RuneToken.webp}"
+
+
+
+# Create Ascendancy Artwork
+  - trigger: ";asc"
+    replace: "A stunning retro fantasy watercolor artwork Orindral, Warden Owl the Ascendancy Spirit, radiating an aura of immense power and mystical energy. The creature appears ethereal, with semi-transparent features illuminated by glowing, intricate runic symbols etched across its form, symbolizing its divine nature. The background is a majestic, colorful environment that complements the creature's energy—vivid skies, ancient forests, celestial realms, or sacred ruins, with radiant spirit-like energy swirling around. The composition emphasizes atmospheric depth with soft brushstrokes and dynamic lighting effects, blending vibrant tones of the spirit's theme with a dreamlike, otherworldly quality. The creature is depicted in a powerful and dynamic pose that conveys its legendary status. The overall style reflects traditional aquarelle techniques, highlighting rich textures and subtle, glowing light effects, resembling hand-painted artwork for a high-fantasy trading card game. In the style of world of warcraft. Please make sure to not include any symbols or banners."
+
+# Human Text Prompt
+  - trigger: ";human"
+    replace: |
+      KI-Prompt zur Umformulierung von Texten unter Berücksichtigung von AI-Erkennungsfaktoren
+
+      Du erhältst einen Text, der typische Merkmale aufweist, die von KI-Content-Detektoren erkannt werden – wie niedrige Perplexität (voraussagbare Formulierungen), geringe Burstiness (einheitliche Satzstrukturen) und wiederholte Wortwahl. Deine Aufgabe ist es, diesen Text sorgfältig zu analysieren und anschließend umzuformulieren, um eine natürlichere, menschliche Schreibweise zu erreichen, ohne die ursprüngliche Bedeutung, den akademischen Ton oder die exakte LaTeX-Syntax zu verändern.
+
+      Anweisungen:
+      	1.	Analyse:
+      	•	Untersuche den Text auf Hinweise wie niedrige Perplexität, geringe Burstiness und wiederholte sprachliche Muster, die typischerweise von KI-generierten Texten erkannt werden.
+      	2.	Umformulierung:
+      	•	Formuliere den Text um, indem du variierende Satzlängen und eine vielfältige Wortwahl einsetzt, um die natürlichen Schwankungen menschlicher Schreibweise zu imitieren und so KI-Erkennungsindikatoren zu reduzieren.
+      	•	Achte darauf, dass der Text wissenschaftlich präzise und klar bleibt – füge keine absichtlichen Fehler ein, um menschliche Unvollkommenheiten zu simulieren.
+      	•	Unter keinen Umständen darf das „–"-Symbol verwendet werden.
+      	•	Bewahre sämtliche LaTeX-Befehle, Gleichungen und Formatierungen exakt unverändert.
+      	3.	Perspektive & Kontext:
+      	•	Der Text ist Bestandteil einer Projektdokumentation für einen Universitätskurs und soll aus der Perspektive eines Universitätsstudenten verfasst werden.
+      	•	Er beschreibt ein Konzept für die Social-App Social Sync – es handelt sich um eine Konzeptentwicklung, bei der bisher nichts implementiert oder live geschaltet wurde. Es existiert lediglich ein Click-Prototyp.
+      	4.	Sprache:
+      	•	Der resultierende Text muss durchgehend in deutscher Sprache verfasst sein.
+      	5.	Ausgabe:
+      	•	Gib eine überarbeitete Version des Textes aus, die den ursprünglichen Inhalt und die Bedeutung beibehält, dabei jedoch eine natürlichere Sprachvarianz zeigt und alle technischen Vorgaben und stilistischen Anforderungen erfüllt.
+
+      Befolge diese Richtlinien, um eine hochwertige, natürlich wirkende Umformulierung des gelieferten Textes für unsere Projektdokumentation zu erstellen, die alle technischen und stilistischen Einschränkungen sowie den vorgegebenen Kontext einhält.
