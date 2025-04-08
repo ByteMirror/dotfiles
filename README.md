@@ -2,50 +2,36 @@
 
 Managed by [Chezmoi](https://chezmoi.io).
 
-## How to sync Chezmoi on new Device
+## How to Use
 
-```bash
-chezmoi init --apply --verbose https://github.com/ByteMirror/dotfiles.git
-```
+1.  **Install Prerequisites**: Manually install Git, Chezmoi, Python 3, Ansible, required Ansible Collections, and configure WinRM (Windows only). See the Prerequisites section below.
+2.  **Initialize Chezmoi**: On a new machine, run:
+    ```bash
+    chezmoi init --apply --verbose https://github.com/ByteMirror/dotfiles.git
+    ```
+    This clones the repository and applies your dotfiles.
+3.  **Sync Dotfiles**: To apply changes to dotfiles pulled from the repo later, run:
+    ```bash
+    chezmoi apply -v
+    ```
+4.  **Sync Applications/Packages**: To manually run the Ansible playbook and install/update applications defined in `ansible/vars/packages.yml`, navigate to your Chezmoi source directory (`chezmoi cd`) and run the appropriate script:
+    *   **Windows**: `powershell ./sync-apps.ps1`
+    *   **macOS/Linux**: `sh ./sync-apps.sh` or `./sync-apps.sh` (if executable)
 
 ## Package Management with Ansible
 
-This setup integrates Ansible to manage application installations across different operating systems directly when you run `chezmoi apply` after initial setup.
+This setup uses Ansible to manage application installations, but it is **run manually**, separate from the `chezmoi apply` command for dotfiles.
 
-**IMPORTANT**: Ansible is **NOT** installed automatically. See Prerequisites below.
-
-1.  **Manual Prerequisite Installation**: You must install Ansible and its dependencies manually on **any** new machine before running `chezmoi init --apply` for the first time.
-2.  **Automatic Package Installation (on `chezmoi apply`)**: After Chezmoi has applied your dotfiles (including the Ansible configuration), subsequent runs of `chezmoi apply` (or the first run of `chezmoi init --apply`) will trigger platform-specific scripts (`run_onchange_after_*`) that execute the Ansible playbook (`ansible/install_packages.yml`). This playbook installs applications defined in `ansible/vars/packages.yml`.
-3.  **Configuration**: To add or remove packages, simply edit the lists within `ansible/vars/packages.yml` and run `chezmoi apply`.
+*   **Manual Trigger**: Use the `sync-apps.ps1` (Windows) or `sync-apps.sh` (Unix) scripts in the root of the source directory to run the Ansible playbook (`ansible/install_packages.yml`).
+*   **Configuration**: Define packages to install/manage in `ansible/vars/packages.yml`.
 
 ### Prerequisites (Manual Setup Required on ALL Platforms)
 
-Before running `chezmoi init --apply` for the first time on any machine:
+Before running `chezmoi init --apply` or `sync-apps.*` for the first time:
 
-*   **General**: Git, common system tools (like `curl`, `sh`).
-*   **Ansible**: You must manually install Ansible.
-    *   **macOS/Linux**: The recommended method is often via your system package manager or `pip`:
-        *   `brew install ansible` (macOS)
-        *   `sudo apt update && sudo apt install ansible` (Debian/Ubuntu)
-        *   `sudo dnf install ansible` (Fedora)
-        *   `pip install --user ansible` (Fallback/Other)
-        Verify with `ansible --version`.
-    *   **Windows**: Follow these steps:
-        1.  **Install Python 3**: From [python.org](https://www.python.org/downloads/windows/), ensuring "Add python.exe to PATH" is checked.
-        2.  **Install Ansible**: Run `pip install --user ansible` in PowerShell/CMD. Verify with `ansible --version` in a new terminal (add Python Scripts to PATH if needed).
-*   **Ansible Collections**: Install required collections on **all** platforms:
-    ```bash
-    ansible-galaxy collection install community.general community.windows
-    ```
-*   **Platform Specifics**:
-    *   **Linux - Espanso AppImage**: Requires `wget`.
-    *   **Linux - Flatpak**: Requires Flatpak installed and configured (e.g., Flathub remote).
-    *   **Windows - WinRM**: Configure WinRM for local Ansible by running the following in an **Administrator** PowerShell:
-        ```powershell
-        winrm quickconfig -q
-        winrm set winrm/config/service/auth @{Basic="true"}
-        winrm set winrm/config/service @{AllowUnencrypted="true"}
-        ```
-    *   **Windows - Package Managers**: Ensure Winget, Chocolatey, Scoop are installed if you use them in the playbook.
+*   **General**: Git, Chezmoi, Python 3, common system tools (like `curl`, `sh`).
+*   **Ansible**: Manually install Ansible (e.g., via `pip install --user ansible`). Verify with `ansible --version`.
+*   **Ansible Collections**: Install required collections: `ansible-galaxy collection install community.general community.windows`.
+*   **Platform Specifics**: (Ensure Python is in PATH, configure WinRM on Windows, install necessary Linux tools like `wget`/Flatpak, install Windows package managers like Winget/Choco/Scoop if used in the playbook - refer to detailed manual setup steps in previous README versions or documentation if needed).
 
-Once prerequisites are met, `chezmoi init --apply ...` will set up dotfiles and run the Ansible playbook for package installation. 
+Once prerequisites are met, `chezmoi init --apply ...` will set up dotfiles, and you can run the `sync-apps.*` scripts to manage packages. 
