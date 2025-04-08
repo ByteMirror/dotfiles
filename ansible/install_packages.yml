@@ -1,0 +1,122 @@
+---
+- name: Install configured packages
+  hosts: local
+  vars_files:
+    - vars/packages.yml
+  tasks:
+    # --- macOS Tasks --- #
+    - name: Install macOS packages with Homebrew
+      become: false # Homebrew usually doesn't need sudo
+      community.general.homebrew:
+        name: "{{ item.name | default(item) }}" # Handle simple strings or dicts with name
+        state: present
+        cask: "{{ item.cask | default(false) }}" # Handle casks if specified
+      loop: "{{ macos_brew_packages }}"
+      when: ansible_facts['os_family'] == "Darwin" and macos_brew_packages is defined and macos_brew_packages | length > 0
+
+    # --- Linux Tasks --- #
+    - name: Install Linux packages with apt
+      become: yes
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+      loop: "{{ linux_apt_packages }}"
+      when: 
+        - ansible_facts['os_family'] == "Debian"
+        - linux_apt_packages is defined
+        - linux_apt_packages | length > 0
+
+    - name: Install Linux packages with dnf
+      become: yes
+      ansible.builtin.dnf:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ linux_dnf_packages }}"
+      when: 
+        - ansible_facts['os_family'] == "RedHat" # Covers Fedora, RHEL, CentOS etc.
+        - linux_dnf_packages is defined
+        - linux_dnf_packages | length > 0
+
+    - name: Install Linux packages with Flatpak
+      become: false # Flatpak usually runs as user
+      community.general.flatpak:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ linux_flatpak_packages }}"
+      when: 
+        - ansible_facts['os_family'] != "Darwin" # General Linux check
+        - linux_flatpak_packages is defined
+        - linux_flatpak_packages | length > 0
+      # Note: Needs Flatpak installed and configured (e.g., flathub remote)
+
+    # --- Specific Linux AppImage: Espanso --- #
+    - name: Install Espanso via AppImage on Linux
+      become: yes # Need sudo for alias and potentially systemd
+      block:
+        - name: Create opt directory for Espanso
+          ansible.builtin.file:
+            path: "{{ ansible_env.HOME }}/opt"
+            state: directory
+            mode: '0755'
+
+        - name: Download Espanso AppImage
+          ansible.builtin.get_url:
+            url: "https://github.com/espanso/espanso/releases/download/v2.2.1/Espanso-X11.AppImage"
+            dest: "{{ ansible_env.HOME }}/opt/Espanso.AppImage"
+            mode: '0755' # Make executable directly
+
+        - name: Create espanso command alias
+          ansible.builtin.command:
+            cmd: "{{ ansible_env.HOME }}/opt/Espanso.AppImage env-path register"
+            creates: /usr/local/bin/espanso # Check if alias likely exists
+
+        - name: Register Espanso service (systemd)
+          ansible.builtin.command:
+            cmd: espanso service register
+          when: ansible_facts['service_mgr'] == 'systemd'
+          # Add a `creates` condition if possible, e.g., checks for the service file
+
+        - name: Start Espanso service (systemd)
+          ansible.builtin.systemd:
+            name: espanso
+            state: started
+            enabled: yes
+            scope: user # Run as user service if possible
+          when: ansible_facts['service_mgr'] == 'systemd'
+
+      when: ansible_facts['os_family'] != "Darwin" # Only run on Linux
+
+    # --- Windows Tasks --- #
+    # Note: Requires community.windows collection and likely pywinrm setup on target
+    # The run_once script doesn't handle Windows setup yet.
+    - name: Install Windows packages with Chocolatey
+      community.windows.win_chocolatey:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ windows_choco_packages }}"
+      when:
+        - ansible_facts['os_family'] == "Windows"
+        - windows_choco_packages is defined
+        - windows_choco_packages | length > 0
+
+    - name: Install Windows packages with Winget
+      community.windows.win_winget:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ windows_winget_packages }}"
+      when:
+        - ansible_facts['os_family'] == "Windows"
+        - windows_winget_packages is defined
+        - windows_winget_packages | length > 0
+
+    - name: Install Windows packages with Scoop
+      # Note: Scoop installs to the user scope by default.
+      community.windows.win_scoop:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ windows_scoop_packages }}"
+      when:
+        - ansible_facts['os_family'] == "Windows"
+        - windows_scoop_packages is defined
+        - windows_scoop_packages | length > 0 
