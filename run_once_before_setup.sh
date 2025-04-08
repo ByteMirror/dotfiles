@@ -30,27 +30,27 @@ ensure_pkg() {
              return 1 # Indicate failure
         fi
     elif [ "$(uname)" = "Linux" ]; then
-         if command -v apt-get >/dev/null 2>&1; then 
-             # Run update separately, warn on failure but continue
-             echo "(run_once script) Running apt-get update..."
-             if ! sudo apt-get update; then
-                 echo "(run_once script) Warning: apt-get update failed. Attempting to install '$pkg_name' anyway..." >&2
+             if command -v apt-get >/dev/null 2>&1; then 
+                 # Run update separately, warn on failure but continue
+                 echo "(run_once script) Running apt-get update..."
+                 if ! sudo apt-get update; then
+                     echo "(run_once script) Warning: apt-get update failed. Attempting to install '$pkg_name' anyway..." >&2
+                 fi
+                 echo "(run_once script) Installing '$pkg_name' using apt-get..."
+                 sudo apt-get install -y "$pkg_name"
+             elif command -v dnf >/dev/null 2>&1; then 
+                 echo "(run_once script) Installing '$pkg_name' using dnf..."
+                 sudo dnf install -y "$pkg_name"
+             elif command -v pacman >/dev/null 2>&1; then 
+                 echo "(run_once script) Updating pacman DB and installing '$pkg_name'..."
+                 sudo pacman -Sy --noconfirm "$pkg_name"
+             elif command -v zypper >/dev/null 2>&1; then 
+                 echo "(run_once script) Installing '$pkg_name' using zypper..."
+                 sudo zypper install -y "$pkg_name"
+             else
+                 echo "(run_once script) Error: Cannot determine Linux package manager to install '$pkg_name'." >&2
+                 return 1 # Indicate failure
              fi
-             echo "(run_once script) Installing '$pkg_name' using apt-get..."
-             sudo apt-get install -y "$pkg_name"
-         elif command -v dnf >/dev/null 2>&1; then 
-             echo "(run_once script) Installing '$pkg_name' using dnf..."
-             sudo dnf install -y "$pkg_name"
-         elif command -v pacman >/dev/null 2>&1; then 
-             echo "(run_once script) Updating pacman DB and installing '$pkg_name'..."
-             sudo pacman -Sy --noconfirm "$pkg_name"
-         elif command -v zypper >/dev/null 2>&1; then 
-             echo "(run_once script) Installing '$pkg_name' using zypper..."
-             sudo zypper install -y "$pkg_name"
-         else
-             echo "(run_once script) Error: Cannot determine Linux package manager to install '$pkg_name'." >&2
-             return 1
-         fi
     else
         echo "(run_once script) Error: Unsupported OS for automatic '$pkg_name' installation." >&2
         return 1 # Indicate failure
