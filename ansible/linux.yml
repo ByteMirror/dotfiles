@@ -1,19 +1,9 @@
 ---
-- name: Install configured packages
+- name: Install Linux packages
   hosts: local
   vars_files:
     - vars/packages.yml
   tasks:
-    # --- macOS Tasks --- #
-    - name: Install macOS packages with Homebrew
-      become: false # Homebrew usually doesn't need sudo
-      community.general.homebrew:
-        name: "{{ item.name | default(item) }}" # Handle simple strings or dicts with name
-        state: present
-        cask: "{{ item.cask | default(false) }}" # Handle casks if specified
-      loop: "{{ macos_brew_packages }}"
-      when: ansible_facts['os_family'] == "Darwin" and macos_brew_packages is defined and macos_brew_packages | length > 0
-
     # --- Linux Tasks --- #
     - name: Install Linux packages with apt
       become: yes
@@ -22,7 +12,7 @@
         state: present
         update_cache: yes
       loop: "{{ linux_apt_packages }}"
-      when:
+      when: 
         - ansible_facts['os_family'] == "Debian"
         - linux_apt_packages is defined
         - linux_apt_packages | length > 0
@@ -33,7 +23,7 @@
         name: "{{ item }}"
         state: present
       loop: "{{ linux_dnf_packages }}"
-      when:
+      when: 
         - ansible_facts['os_family'] == "RedHat" # Covers Fedora, RHEL, CentOS etc.
         - linux_dnf_packages is defined
         - linux_dnf_packages | length > 0
@@ -44,8 +34,7 @@
         name: "{{ item }}"
         state: present
       loop: "{{ linux_flatpak_packages }}"
-      when:
-        - ansible_facts['os_family'] != "Darwin" # General Linux check
+      when: 
         - linux_flatpak_packages is defined
         - linux_flatpak_packages | length > 0
       # Note: Needs Flatpak installed and configured (e.g., flathub remote)
@@ -75,7 +64,6 @@
           ansible.builtin.command:
             cmd: espanso service register
           when: ansible_facts['service_mgr'] == 'systemd'
-          # Add a `creates` condition if possible, e.g., checks for the service file
 
         - name: Start Espanso service (systemd)
           ansible.builtin.systemd:
@@ -83,6 +71,4 @@
             state: started
             enabled: yes
             scope: user # Run as user service if possible
-          when: ansible_facts['service_mgr'] == 'systemd'
-
-      when: ansible_facts['os_family'] != "Darwin" # Only run on Linux 
+          when: ansible_facts['service_mgr'] == 'systemd' 

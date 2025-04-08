@@ -4,16 +4,31 @@ Managed by [Chezmoi](https://chezmoi.io).
 
 ## How to Use
 
-1.  **Initialize Chezmoi**: On a new machine, run:
+1.  **Prerequisites**: Ensure `git` and `curl` are installed on the new system.
+2.  **Initialize Chezmoi**: On a new **macOS or Linux** machine, run:
     ```bash
     chezmoi init --apply --verbose https://github.com/ByteMirror/dotfiles.git
     ```
-    *   **On macOS/Linux**: This attempts to automatically install Ansible (via Homebrew, apt, dnf, etc.) and required collections using the `run_once_before_setup.sh` script if Ansible is not found.
-    *   **On Windows**: This only clones the repository and applies dotfiles. **No** automatic setup or package management is performed.
-2.  **Apply Changes/Updates**: Running `chezmoi apply` or `chezmoi update` later will:
-    *   Apply any dotfile changes.
-    *   **On macOS/Linux**: Trigger the `run_onchange_after_apply.sh` script which executes the Ansible playbook (`ansible/install_packages.yml`) to install/update applications defined in `ansible/vars/packages.yml`.
-    *   **On Windows**: Only apply dotfile changes.
+    This command will:
+    *   Clone the repository.
+    *   Run a setup script (`run_once_before_setup.sh`) that attempts to:
+        *   Install `zsh`, `git`, `curl` (if missing) using the system package manager.
+        *   Install Oh My Zsh.
+        *   Install the Powerlevel10k theme.
+        *   Install Ansible (if missing) using the system package manager or pip.
+        *   Install the required Ansible collection (`community.general`).
+    *   Apply your managed dotfiles (including `.zshrc`, `.p10k.zsh`, etc.).
+    *   Run the Ansible playbook (`run_onchange_after_apply.sh`) to install applications defined in `ansible/vars/packages.yml`.
+3.  **Apply Changes/Updates**: Running `chezmoi apply -v` or `chezmoi update -v` later will apply dotfile changes and re-run the Ansible playbook if changes occurred.
+4.  **Manual Application Sync**: Use `pkg sync` (defined in `.zshrc`) to run the Ansible playbook on demand.
+
+**Note:** This setup is primarily designed for macOS and Linux. On Windows, only dotfile synchronization via `chezmoi apply` is supported; automated setup and package management are disabled.
+
+## Package Management (macOS/Linux Only)
+
+*   Applications are managed via Ansible, configured in `ansible/vars/packages.yml`.
+*   Run `pkg sync` to manually trigger an application update/installation check.
+*   Ansible also runs automatically after `chezmoi apply` modifies files.
 
 ## Package Management with Ansible (macOS/Linux Only)
 

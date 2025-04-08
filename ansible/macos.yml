@@ -1,0 +1,22 @@
+---
+- name: Install macOS packages
+  hosts: local
+  vars_files:
+    - vars/packages.yml
+  tasks:
+    # --- macOS Tasks --- #
+    - name: Install macOS formulae with Homebrew
+      become: false
+      community.general.homebrew:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ macos_brew_formulae }}"
+      when: macos_brew_formulae is defined and macos_brew_formulae | length > 0
+
+    - name: Install macOS casks with Homebrew Cask
+      become: false
+      community.general.homebrew_cask:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ macos_brew_casks }}"
+      when: macos_brew_casks is defined and macos_brew_casks | length > 0 

@@ -1,12 +1,15 @@
-# Packages to install via Homebrew on macOS
-macos_brew_packages:
-  - espanso
+# Packages (Formulae) to install via Homebrew on macOS
+macos_brew_formulae:
   - helix
+  - tree
+  # - git
+  # - neovim
 
-  # - another-package
-  # - cask-package: # For casks, use a dictionary
-  #     name: google-chrome
-  #     cask: true
+# Packages (Casks) to install via Homebrew on macOS
+macos_brew_casks:
+  - espanso
+  # - google-chrome
+  # - visual-studio-code
 
 # Packages to install via apt on Debian/Ubuntu Linux
 linux_apt_packages: []
