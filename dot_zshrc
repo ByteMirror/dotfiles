@@ -126,105 +126,121 @@ export PATH="$PATH:/Applications/screenpipe.app/Contents/MacOS"
 
 # Custom package management wrapper for Chezmoi/Ansible setup
 pkg() {
-  # Default command is 'sync' if none provided, or if first arg is sync
-  local command="sync"
-  local commit_msg=""
-  local git_push_args=""
+  # Default command is 'update' if none provided
+  local command="update"
+  local commit_msg="chore: Sync dotfiles via pkg sync"
+  local show_help=0
 
-  # Basic argument parsing
+  # Argument parsing
   if [ -n "$1" ]; then
-    # Check if it's a known command or part of a commit message for update
     case "$1" in
-      sync|install|add|remove|uninstall|list|search|update)
+      update|sync|install|add|remove|uninstall|list|search)
         command="$1"
-        shift # Consume the command argument
+        shift
+        ;;
+      help|-h|--help)
+        show_help=1
+        command="help" # Assign a command name for the case statement
         ;;
       *)
-        # If not a known command, assume default is 'sync' and args are unrelated for now
-        # Or, potentially, treat args as targets for install/remove later
-        # For update, we might want a -m flag later, but let's keep it simple.
+        # If not a known command, assume default 'update'
+        # Or handle arguments for install/remove later
         ;;
     esac
   fi
 
+  # --- Help Command --- #
+  if [ $show_help -eq 1 ]; then
+    echo "Usage: pkg <command>"
+    echo ""
+    echo "Commands:"
+    echo "  update   Update local applications by running the Ansible playbook (Default)"
+    echo "  sync     Sync local configuration changes to the remote Git repository"
+    # echo "  install  Install packages (Not Implemented)"
+    # echo "  remove   Remove packages (Not Implemented)"
+    # echo "  list     List configured packages (Not Implemented)"
+    echo "  help     Show this help message"
+    return 0
+  fi
+
+  # --- Get Source Directory (Needed for all commands) --- #
   local source_dir
   source_dir="$(chezmoi source-path)"
   if [ -z "$source_dir" ]; then
-    echo "Error: Could not determine chezmoi source directory." >&2
+    echo ":: Error: Could not determine chezmoi source directory." >&2
     return 1
   fi
 
   # Remember current directory
   local current_dir
   current_dir="$(pwd)"
-
-  # --- Change to Source Directory --- #
-  echo "==> Changing to source directory: $source_dir"
-  cd "$source_dir" || return 1
-
-  # --- Execute Command --- #
-  local script_path="$source_dir/run_onchange_after_apply.sh"
   local exit_code=0
 
+  # --- Execute Command --- #
   case "$command" in
-    sync)
+    update) # Renamed from sync - Runs Ansible playbook
+      local script_path="$source_dir/run_onchange_after_apply.sh"
       if [ ! -f "$script_path" ]; then
-        echo "Error: Sync script not found at '$script_path'" >&2
+        echo ":: Error: Ansible run script not found at '$script_path'" >&2
         exit_code=1
       else
-        echo "==> Running application sync (Ansible playbook)..."
-        chmod +x "$script_path" # Ensure executable
-        if ! "$script_path"; then
-          echo "Error: Application sync script failed." >&2
-          exit_code=1
-        else
-          echo "==> Application sync script finished."
+        # Temporarily cd to source dir for script execution context if needed by script
+        ( # Run in a subshell to isolate cd
+          cd "$source_dir" || exit 1
+          echo ":: Running application update (Ansible playbook)..."
+          chmod +x "$script_path" # Ensure executable
+          if ! "$script_path"; then
+            echo ":: Error: Application update script failed." >&2
+            # The script itself should output Ansible errors
+            exit 1 # Indicate failure in the subshell
+          else
+            echo ":: Application update finished." # Script indicates success/failure internally
+          fi
+        )
+        exit_code=$? # Capture exit code from subshell
+        if [ $exit_code -ne 0 ]; then
+           echo ":: Update command finished with errors." >&2
         fi
       fi
       ;;
-    update)
-      echo "==> Staging all changes..."
-      if ! git add .; then
-        echo "Error: git add failed." >&2
-        exit_code=1
-      else
-        # Check if there are changes staged
+    sync) # Renamed from update - Git add, commit, push
+      echo ":: Syncing local changes to remote repository..."
+      # Run git commands within the source directory using a subshell
+      (
+        cd "$source_dir" || exit 1
+        echo ":: Staging changes..."
+        if ! git add .; then
+            echo ":: Error: git add failed." >&2; exit 1; fi
+
         if git diff --staged --quiet; then
-          echo "==> No changes staged to commit."
-        else
-          commit_msg="chore: Update dotfiles via pkg update"
-          echo "==> Committing changes with message: '$commit_msg'"
-          if ! git commit -m "$commit_msg"; then
-            echo "Error: git commit failed." >&2
-            exit_code=1
-          else
-            echo "==> Pushing changes to remote (origin HEAD)..."
-            # Push current branch to its upstream on origin
-            if ! git push origin HEAD; then
-              echo "Error: git push failed." >&2
-              exit_code=1
-            else
-              echo "==> Update pushed successfully."
-            fi
-          fi
-        fi
-      fi
+          echo ":: No changes staged to commit."; exit 0; fi
+
+        echo ":: Committing changes..."
+        if ! git commit -m "$commit_msg"; then
+            echo ":: Error: git commit failed." >&2; exit 1; fi
+
+        echo ":: Pushing changes to origin..."
+        if ! git push origin HEAD; then
+            echo ":: Error: git push failed." >&2; exit 1; fi
+
+        echo ":: Sync complete."
+      )
+      exit_code=$? # Capture exit code from subshell
+       if [ $exit_code -ne 0 ]; then
+           echo ":: Sync command finished with errors." >&2
+       fi
       ;;
     install|add|remove|uninstall|list|search)
-      echo "Error: Command '$command' not yet implemented." >&2
-      echo "Usage: pkg [sync|update]" >&2
+      echo ":: Error: Command '$command' not yet implemented." >&2
+      echo "Run 'pkg help' for usage."
       exit_code=1
       ;;
     *)
-      echo "Error: Unknown command '$command'." >&2
-      echo "Usage: pkg [sync|update]" >&2
+      echo ":: Error: Unknown command '$command'." >&2
+      echo "Run 'pkg help' for usage."
       exit_code=1
       ;;
   esac
-
-  # --- Change Back --- #
-  echo "==> Changing back to original directory: $current_dir"
-  cd "$current_dir" || echo "Warning: Could not change back to original directory '$current_dir'" >&2
 
   return $exit_code
 }
