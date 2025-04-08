@@ -1,5 +1,21 @@
 #!/bin/sh
 
+# --- OS Check --- #
+# Exit immediately if running on a Windows-like system where this script shouldn't run
+if [ -n "$OS" ] && [ "$OS" = "Windows_NT" ]; then
+    echo "Skipping Unix setup script on Windows (detected via $OS variable)."
+    exit 0
+# Add checks for common Unix-on-Windows environments via uname
+elif command -v uname >/dev/null 2>&1; then
+    case "$(uname -s)" in
+        CYGWIN*|MINGW*|MSYS*|Windows_NT)
+            echo "Skipping Unix setup script on Windows (detected via uname)."
+            exit 0
+            ;;
+    esac
+fi
+# --- End OS Check --- #
+
 set -e # Exit immediately if a command exits with a non-zero status.
 
 # Check if Ansible is installed
