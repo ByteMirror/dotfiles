@@ -36,8 +36,9 @@ ensure_pkg() {
                  if ! sudo apt-get update; then
                      echo "(run_once script) Warning: apt-get update failed. Attempting to install '$pkg_name' anyway..." >&2
                  fi
-                 echo "(run_once script) Installing '$pkg_name' using apt-get..."
-                 sudo apt-get install -y "$pkg_name"
+                 echo "(run_once script) Installing '$pkg_name' using apt-get (non-interactive)..."
+                 # Force non-interactive frontend
+                 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "$pkg_name"
              elif command -v dnf >/dev/null 2>&1; then 
                  echo "(run_once script) Installing '$pkg_name' using dnf..."
                  sudo dnf install -y "$pkg_name"
