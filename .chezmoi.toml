@@ -1,5 +1,9 @@
 # .chezmoi.toml
 
+[git]
+  autoCommit = true
+  autoPush = true
+
 # Explicitly define interpreter for .sh files and restrict to non-Windows OS
 [interpreters.".sh"]
   command = "sh"
