@@ -244,3 +244,21 @@ pkg() {
 
   return $exit_code
 }
+
+# Added by Windsurf
+export PATH="/Users/fabian/.codeium/windsurf/bin:$PATH"
+alias claude="/Users/fabian/.claude/local/claude"
+
+eval "$(zoxide init zsh)"
+
+. "$HOME/.local/bin/env"
+
+
+# Load Angular CLI autocompletion.
+source <(ng completion script)
+
+# Obsidian Remote Debugging for Electron MCP
+alias obsidian-debug="open -n /Applications/Obsidian.app --args --enable-debug-logging --remote-debugging-port=9222"
+
+# Added by Antigravity
+export PATH="/Users/fabian/.antigravity/antigravity/bin:$PATH"
