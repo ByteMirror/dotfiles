@@ -107,8 +107,13 @@ return {
       end
     end, { desc = "Harpoon: Toggle pin file" })
 
-    -- Toggle Telescope harpoon menu
+    -- Toggle Telescope harpoon menu (lowercase e)
     vim.keymap.set("n", "<D-C-S-M-e>", function()
+      toggle_telescope(harpoon:list())
+    end, { desc = "Harpoon: Telescope menu" })
+
+    -- Toggle Telescope harpoon menu (uppercase E for when shift is held)
+    vim.keymap.set("n", "<D-C-S-M-E>", function()
       toggle_telescope(harpoon:list())
     end, { desc = "Harpoon: Telescope menu" })
 
