@@ -40,6 +40,28 @@ matches:
   - trigger: ";quote"
     replace: "„"
 
+  # German umlauts
+  - trigger: ";a"
+    replace: "ä"
+
+  - trigger: ";u"
+    replace: "ü"
+
+  - trigger: ";o"
+    replace: "ö"
+
+  - trigger: ";s"
+    replace: "ß"
+
+  - trigger: ";A"
+    replace: "Ä"
+
+  - trigger: ";U"
+    replace: "Ü"
+
+  - trigger: ";O"
+    replace: "Ö"
+
   # Simple text replacement
   - trigger: ";nar"
     replace: "> [!Tip] Vorlesen"
