@@ -1,0 +1,39 @@
+# Custom Belafonte Day theme matching Neovim colors exactly
+
+background = #D4CCC4
+foreground = #45363F
+cursor-color = #45363F
+selection-background = #E0DBD5
+selection-foreground = #45363F
+
+# Black
+palette = 0=#201011
+palette = 8=#525252
+
+# Red
+palette = 1=#BE1010
+palette = 9=#BE1010
+
+# Green
+palette = 2=#858162
+palette = 10=#858162
+
+# Yellow
+palette = 3=#EAA64B
+palette = 11=#EAA64B
+
+# Blue
+palette = 4=#3182BD
+palette = 12=#3182BD
+
+# Magenta
+palette = 5=#975952
+palette = 13=#975952
+
+# Cyan (set to match blue for prompt consistency)
+palette = 6=#3182BD
+palette = 14=#3182BD
+
+# White
+palette = 7=#968D94
+palette = 15=#D4CCC4
