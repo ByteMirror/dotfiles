@@ -61,10 +61,22 @@ return {
       }):find()
     end
 
-    -- Hyperkey = CMD + CTRL + SHIFT + OPTION (D-C-S-M in Neovim notation)
+    -- Hyperkey setup:
+    -- macOS: CMD + CTRL + SHIFT + OPTION (D-C-S-M in Neovim notation) via Karabiner
+    -- Linux: CTRL + SHIFT + ALT (C-S-M in Neovim notation) via keyd
+    local is_mac = vim.fn.has("macunix") == 1
+
+    -- Helper to create keybinding with correct Hyperkey for OS
+    local function hyper(key)
+      if is_mac then
+        return "<D-C-S-M-" .. key .. ">"
+      else
+        return "<C-S-M-" .. key .. ">"
+      end
+    end
 
     -- Toggle file in harpoon list with notification
-    vim.keymap.set("n", "<D-C-S-M-a>", function()
+    vim.keymap.set("n", hyper("a"), function()
       local list = harpoon:list()
       local current_file = vim.fn.expand("%:p")
       local filename = vim.fn.fnamemodify(current_file, ":t")
@@ -108,43 +120,43 @@ return {
     end, { desc = "Harpoon: Toggle pin file" })
 
     -- Toggle Telescope harpoon menu (lowercase e)
-    vim.keymap.set("n", "<D-C-S-M-e>", function()
+    vim.keymap.set("n", hyper("e"), function()
       toggle_telescope(harpoon:list())
     end, { desc = "Harpoon: Telescope menu" })
 
     -- Toggle Telescope harpoon menu (uppercase E for when shift is held)
-    vim.keymap.set("n", "<D-C-S-M-E>", function()
+    vim.keymap.set("n", hyper("E"), function()
       toggle_telescope(harpoon:list())
     end, { desc = "Harpoon: Telescope menu" })
 
     -- Toggle default quick menu (alternative)
-    vim.keymap.set("n", "<D-C-S-M-h>", function()
+    vim.keymap.set("n", hyper("h"), function()
       harpoon.ui:toggle_quick_menu(harpoon:list())
     end, { desc = "Harpoon: Quick menu" })
 
     -- Navigate to specific files (1-4) with Hyper + number
-    vim.keymap.set("n", "<D-C-S-M-1>", function()
+    vim.keymap.set("n", hyper("1"), function()
       harpoon:list():select(1)
     end, { desc = "Harpoon: File 1" })
 
-    vim.keymap.set("n", "<D-C-S-M-2>", function()
+    vim.keymap.set("n", hyper("2"), function()
       harpoon:list():select(2)
     end, { desc = "Harpoon: File 2" })
 
-    vim.keymap.set("n", "<D-C-S-M-3>", function()
+    vim.keymap.set("n", hyper("3"), function()
       harpoon:list():select(3)
     end, { desc = "Harpoon: File 3" })
 
-    vim.keymap.set("n", "<D-C-S-M-4>", function()
+    vim.keymap.set("n", hyper("4"), function()
       harpoon:list():select(4)
     end, { desc = "Harpoon: File 4" })
 
     -- Navigate between harpoon files
-    vim.keymap.set("n", "<D-C-S-M-p>", function()
+    vim.keymap.set("n", hyper("p"), function()
       harpoon:list():prev()
     end, { desc = "Harpoon: Previous file" })
 
-    vim.keymap.set("n", "<D-C-S-M-n>", function()
+    vim.keymap.set("n", hyper("n"), function()
       harpoon:list():next()
     end, { desc = "Harpoon: Next file" })
   end,
