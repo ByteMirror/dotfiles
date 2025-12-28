@@ -41,5 +41,4 @@ keybind = shift+enter=text:\n
 command = /usr/bin/zsh
 
 # Titlebar on Linux
-gtk-titlebar-style = tabs
-
+# gtk-titlebar-style = tabs
