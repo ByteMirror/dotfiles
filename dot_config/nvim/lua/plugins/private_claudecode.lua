@@ -2,8 +2,8 @@ return {
   "coder/claudecode.nvim",
   dependencies = { "folke/snacks.nvim" },
   opts = {
-    -- Point to local Claude installation
-    terminal_cmd = "/Users/fabian/.claude/local/claude",
+    -- Point to local Claude installation (Linux)
+    terminal_cmd = "/home/fabian/.local/bin/claude",
 
     -- Auto-start the WebSocket server
     auto_start = true,

@@ -3,10 +3,12 @@ return {
   {
     "lervag/vimtex",
     lazy = false,
-    ft = { "tex", "bib" },
     init = function()
       -- Use latexmk for compilation
       vim.g.vimtex_compiler_method = "latexmk"
+
+      -- Enable notifications (1 = echo, 2 = vim.notify)
+      vim.g.vimtex_notify_mode = 2
 
       -- Compiler options for latexmk
       vim.g.vimtex_compiler_latexmk = {
@@ -25,11 +27,9 @@ return {
         },
       }
 
-      -- PDF viewer - Skim (with bidirectional sync)
-      vim.g.vimtex_view_method = "skim"
-      vim.g.vimtex_view_skim_sync = 1 -- Auto-sync on cursor move
-      vim.g.vimtex_view_skim_activate = 1 -- Activate Skim on \lv
-      vim.g.vimtex_view_skim_reading_bar = 1 -- Show reading bar in Skim
+      -- PDF viewer - generic (works with evince, okular, zathura)
+      vim.g.vimtex_view_method = "general"
+      vim.g.vimtex_view_general_viewer = "xdg-open"
 
       -- Quickfix settings - show errors
       vim.g.vimtex_quickfix_mode = 2
@@ -41,19 +41,8 @@ return {
       -- Set the flavor to LaTeX (not plain TeX)
       vim.g.tex_flavor = "latex"
 
-      -- Callback for inverse search (Skim -> Neovim)
+      -- Callback for inverse search
       vim.g.vimtex_compiler_progname = "nvr"
-
-      -- Write servername to file for Skim backward search
-      vim.api.nvim_create_autocmd("FileType", {
-        pattern = "tex",
-        callback = function()
-          local servername = vim.v.servername
-          if servername and servername ~= "" then
-            vim.fn.system("echo " .. servername .. " > /tmp/curvimserver")
-          end
-        end,
-      })
     end,
   },
 
@@ -80,8 +69,8 @@ return {
                 onSave = true,
               },
               forwardSearch = {
-                executable = "/opt/homebrew/bin/displayline",
-                args = { "%l", "%p", "%f" },
+                executable = "xdg-open",
+                args = { "%p" },
               },
               chktex = {
                 onOpenAndSave = true,
