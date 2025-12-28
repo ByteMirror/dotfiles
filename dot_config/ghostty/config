@@ -1,0 +1,11 @@
+# TERMINAL APPEARANCE
+theme = dark:Afterglow,light:belafonte-day-custom
+
+# WINDOW SETTINGS
+# macos-titlebar-style = hidden
+
+# KEYBINDINGS
+keybind = cmd+shift+v=new_split:right
+
+
+keybind = shift+enter=text:\n
