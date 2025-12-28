@@ -43,6 +43,13 @@ keybind = {{ $hyper }}+down=goto_split:down
 # Equalize splits
 keybind = {{ $hyper }}+equal=equalize_splits
 
+# Close current split
+{{- if eq .chezmoi.os "darwin" }}
+keybind = cmd+w=close_surface
+{{- else }}
+keybind = super+w=close_surface
+{{- end }}
+
 # KEYBINDINGS
 {{- if eq .chezmoi.os "darwin" }}
 keybind = cmd+shift+v=new_split:right
